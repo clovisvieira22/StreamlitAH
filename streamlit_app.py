@@ -6,16 +6,13 @@
 #)
 import streamlit as st
 import psycopg2
-import dotenv
 from psycopg2 import sql
 
-load_dotenv()
-
-DBName           = os.getenv("DBName")
-DBHost           = os.getenv("DBHost")
-DBPort           = os.getnev("DBPort")  
-DBUser           = os.getenv("DBUser")
-DBPassword       = os.getenv("DBPassword")
+DBName      = st.secrets["credentials"]["db_name"]
+DBUser      = st.secrets["credentials"]["db_user"]
+DBPassword  = st.secrets["credentials"]["db_password"]
+DBHost      = st.secrets["credentials"]["db_host"]
+DBPort      = st.secrets["credentials"]["db_port"]
 
 # Função para conectar ao banco de dados PostgreSQL
 def conectar_banco():

@@ -6,17 +6,26 @@
 #)
 import streamlit as st
 import psycopg2
+import dotenv
 from psycopg2 import sql
+
+load_dotenv()
+
+DBName           = os.getenv("DBName")
+DBHost           = os.getenv("DBHost")
+DBPort           = os.getnev("DBPort")  
+DBUser           = os.getenv("DBUser")
+DBPassword       = os.getenv("DBPassword")
 
 # Função para conectar ao banco de dados PostgreSQL
 def conectar_banco():
     try:
         conn = psycopg2.connect(
-            dbname="nome_do_banco",  # Substitua pelo nome do seu banco de dados
-            user="usuario",         # Substitua pelo seu usuário
-            password="senha",      # Substitua pela sua senha
-            host="localhost",      # Substitua pelo host do banco de dados
-            port="5432"            # Substitua pela porta do banco de dados
+            dbname=DBName, 
+            user=DBUser,        
+            password=DBPassword,  
+            host=DBHost, 
+            port=DBPort      
         )
         return conn
     except Exception as e:

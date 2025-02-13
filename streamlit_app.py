@@ -145,11 +145,14 @@ def salvar_cliente(codigo, dados):
         conn.close()
 
 # Interface do Streamlit
-st.title("Sistema de Gerenciamento de Clientes")
+st.title("Clientes")
 
 # Componente de guias (tabs)
 tab1, tab2, tab3 = st.tabs(["Incluir Cliente", "Alterar Cliente", "Listar Clientes"])
 
+# Guia 1: Incluir Cliente
+# Guia 1: Incluir Cliente
+# Guia 1: Incluir Cliente
 # Guia 1: Incluir Cliente
 with tab1:
     st.header("Incluir Novo Cliente")
@@ -157,24 +160,24 @@ with tab1:
 
     # Campos do formulário
     nome = st.text_input("Nome:")
-    nascimento = st.date_input("Data de Nascimento:")
+    nascimento = st.date_input("Data de Nascimento:", key="nascimento_incluir")
     ba_zhi = st.text_input("Ba Zhi:")
     chamar = st.text_input("Chamar:")
     assinatura = st.text_input("Assinatura:")
     relacionamento = st.text_input("Relacionamento:")
     profissao = st.text_input("Profissão:")
     orientacao = st.text_input("Orientação:")
-    inicio_assinatura = st.date_input("Início da Assinatura:")
-    fim_assinatura = st.date_input("Fim da Assinatura:")
-    inicio_degustacao = st.date_input("Início da Degustação:")
-    fim_degustacao = st.date_input("Fim da Degustação:")
-    nascimento_ano = st.number_input("Ano de Nascimento:", min_value=1900, max_value=2100)
-    nascimento_mes = st.number_input("Mês de Nascimento:", min_value=1, max_value=12)
-    nascimento_dia = st.number_input("Dia de Nascimento:", min_value=1, max_value=31)
-    nascimento_hora = st.number_input("Hora de Nascimento:", min_value=0, max_value=23)
-    nascimento_minuto = st.number_input("Minuto de Nascimento:", min_value=0, max_value=59)
-    nascimento_latitude = st.number_input("Latitude de Nascimento:", value=0.0)
-    nascimento_longitude = st.number_input("Longitude de Nascimento:", value=0.0)
+    inicio_assinatura = st.date_input("Início da Assinatura:", key="inicio_assinatura_incluir")
+    fim_assinatura = st.date_input("Fim da Assinatura:", key="fim_assinatura_incluir")
+    inicio_degustacao = st.date_input("Início da Degustação:", key="inicio_degustacao_incluir")
+    fim_degustacao = st.date_input("Fim da Degustação:", key="fim_degustacao_incluir")
+    nascimento_ano = st.number_input("Ano de Nascimento:", min_value=1900, max_value=2100, key="nascimento_ano_incluir")
+    nascimento_mes = st.number_input("Mês de Nascimento:", min_value=1, max_value=12, key="nascimento_mes_incluir")
+    nascimento_dia = st.number_input("Dia de Nascimento:", min_value=1, max_value=31, key="nascimento_dia_incluir")
+    nascimento_hora = st.number_input("Hora de Nascimento:", min_value=0, max_value=23, key="nascimento_hora_incluir")
+    nascimento_minuto = st.number_input("Minuto de Nascimento:", min_value=0, max_value=59, key="nascimento_minuto_incluir")
+    nascimento_latitude = st.number_input("Latitude de Nascimento:", value=0.0, key="nascimento_latitude_incluir")
+    nascimento_longitude = st.number_input("Longitude de Nascimento:", value=0.0, key="nascimento_longitude_incluir")
 
     # Botão para salvar
     if st.button("Salvar Cliente"):
@@ -234,29 +237,31 @@ with tab2:
 
         # Campos do formulário
         nome = st.text_input("Nome:", value=cliente[1])
-        nascimento = st.date_input("Data de Nascimento:", value=cliente[2])
+        nascimento = st.date_input("Data de Nascimento:", value=cliente[2], key="nascimento_alterar")
         ba_zhi = st.text_input("Ba Zhi:", value=cliente[3])
         chamar = st.text_input("Chamar:", value=cliente[4])
         assinatura = st.text_input("Assinatura:", value=cliente[5])
         relacionamento = st.text_input("Relacionamento:", value=cliente[6])
         profissao = st.text_input("Profissão:", value=cliente[7])
         orientacao = st.text_input("Orientação:", value=cliente[8])
-        inicio_assinatura = st.date_input("Início da Assinatura:", value=cliente[9])
-        fim_assinatura = st.date_input("Fim da Assinatura:", value=cliente[10])
-        inicio_degustacao = st.date_input("Início da Degustação:", value=cliente[11])
-        fim_degustacao = st.date_input("Fim da Degustação:", value=cliente[12])
-        nascimento_ano = st.number_input("Ano de Nascimento:", value=cliente[13], min_value=1900, max_value=2100)
-        nascimento_mes = st.number_input("Mês de Nascimento:", value=cliente[14], min_value=1, max_value=12)
-        nascimento_dia = st.number_input("Dia de Nascimento:", value=cliente[15], min_value=1, max_value=31)
-        nascimento_hora = st.number_input("Hora de Nascimento:", value=cliente[16], min_value=0, max_value=23)
-        nascimento_minuto = st.number_input("Minuto de Nascimento:", value=cliente[17], min_value=0, max_value=59)
+        inicio_assinatura = st.date_input("Início da Assinatura:", value=cliente[9], key="inicio_assinatura_alterar")
+        fim_assinatura = st.date_input("Fim da Assinatura:", value=cliente[10], key="fim_assinatura_alterar")
+        inicio_degustacao = st.date_input("Início da Degustação:", value=cliente[11], key="inicio_degustacao_alterar")
+        fim_degustacao = st.date_input("Fim da Degustação:", value=cliente[12], key="fim_degustacao_alterar")
+        nascimento_ano = st.number_input("Ano de Nascimento:", value=cliente[13], min_value=1900, max_value=2100, key="nascimento_ano_alterar")
+        nascimento_mes = st.number_input("Mês de Nascimento:", value=cliente[14], min_value=1, max_value=12, key="nascimento_mes_alterar")
+        nascimento_dia = st.number_input("Dia de Nascimento:", value=cliente[15], min_value=1, max_value=31, key="nascimento_dia_alterar")
+        nascimento_hora = st.number_input("Hora de Nascimento:", value=cliente[16], min_value=0, max_value=23, key="nascimento_hora_alterar")
+        nascimento_minuto = st.number_input("Minuto de Nascimento:", value=cliente[17], min_value=0, max_value=59, key="nascimento_minuto_alterar")
         nascimento_latitude = st.number_input(
             "Latitude de Nascimento:",
-            value=float(cliente[18]) if cliente[18] is not None else 0.0
+            value=float(cliente[18]) if cliente[18] is not None else 0.0,
+            key="nascimento_latitude_alterar"
         )
         nascimento_longitude = st.number_input(
             "Longitude de Nascimento:",
-            value=float(cliente[19]) if cliente[19] is not None else 0.0
+            value=float(cliente[19]) if cliente[19] is not None else 0.0,
+            key="nascimento_longitude_alterar"
         )
 
         # Botão para salvar
@@ -285,7 +290,6 @@ with tab2:
 
             if salvar_cliente(cliente[0], dados):
                 st.session_state["cliente"] = None  # Limpar o formulário após salvar
-
 # Guia 3: Listar Clientes
 with tab3:
     st.header("Lista de Clientes")
@@ -293,16 +297,24 @@ with tab3:
     if clientes:
         # Definir nomes das colunas corrigidos
         colunas = [
-            "Código", "Nome", "Data Nascimento", "Ba Zhi", "Chamar", "Assinatura", 
+            "Código", "Código", "Nome", "Data Nascimento", "Ba Zhi", "Chamar", "Assinatura", 
             "Relacionamento", "Profissão", "Orientação", "Início Assinatura", 
             "Fim Assinatura", "Início Degustação", "Fim Degustação", "Ano Nascimento",
             "Mês Nascimento", "Dia Nascimento", "Hora Nascimento", "Minuto Nascimento",
             "Latitude Nascimento", "Longitude Nascimento"
         ]
 
+        # Formatar os dados para exibir 4 casas decimais na latitude e longitude
+        clientes_formatados = []
+        for cliente in clientes:
+            cliente_formatado = list(cliente)
+            cliente_formatado[18] = f"{float(cliente[18]):.4f}" if cliente[18] is not None else "0.0000"
+            cliente_formatado[19] = f"{float(cliente[19]):.4f}" if cliente[19] is not None else "0.0000"
+            clientes_formatados.append(cliente_formatado)
+
         # Exibir tabela com formatação aprimorada
         st.dataframe(
-            clientes,
+            clientes_formatados,
             column_config={i: col for i, col in enumerate(colunas)},
             width=900,
             height=600

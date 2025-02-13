@@ -9,6 +9,18 @@ DBPassword = st.secrets["credentials"]["db_password"]
 DBHost = st.secrets["credentials"]["db_host"]
 DBPort = st.secrets["credentials"]["db_port"]
 
+# Adicionar estilo CSS para tabela zebrada
+st.markdown("""
+<style>
+    .dataframe tr:nth-child(even) {
+        background-color: #f5f5f5;
+    }
+    .dataframe tr:hover {
+        background-color: #e0e0e0;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Função para conectar ao banco de dados PostgreSQL
 def conectar_banco():
     try:
@@ -24,20 +36,20 @@ def conectar_banco():
         st.error(f"Erro ao conectar ao banco de dados: {e}")
         return None
 
-# Função para buscar um cliente pelo código
-def buscar_cliente_por_codigo(codigo):
+# Função para buscar clientes por nome ou parte do nome
+def buscar_clientes_por_nome(nome):
     conn = conectar_banco()
     if not conn:
         return None
 
     try:
         with conn.cursor() as cursor:
-            query = sql.SQL("SELECT * FROM public.clientes WHERE codigo = %s")
-            cursor.execute(query, (codigo,))
-            resultado = cursor.fetchone()
-            return resultado
+            query = sql.SQL("SELECT * FROM public.clientes WHERE nome ILIKE %s ORDER BY codigo ASC")
+            cursor.execute(query, (f"%{nome}%",))
+            resultados = cursor.fetchall()
+            return resultados
     except Exception as e:
-        st.error(f"Erro ao buscar cliente: {e}")
+        st.error(f"Erro ao buscar clientes: {e}")
         return None
     finally:
         conn.close()
@@ -50,7 +62,7 @@ def listar_clientes():
 
     try:
         with conn.cursor() as cursor:
-            query = sql.SQL("SELECT * FROM public.clientes")
+            query = sql.SQL("SELECT * FROM public.clientes ORDER BY codigo ASC")
             cursor.execute(query)
             resultados = cursor.fetchall()
             return resultados
@@ -135,14 +147,11 @@ def salvar_cliente(codigo, dados):
 # Interface do Streamlit
 st.title("Sistema de Gerenciamento de Clientes")
 
-# Menu lateral
-opcao = st.sidebar.radio(
-    "Selecione uma opção:",
-    ("Incluir Cliente", "Alterar Cliente", "Listar Clientes")
-)
+# Componente de guias (tabs)
+tab1, tab2, tab3 = st.tabs(["Incluir Cliente", "Alterar Cliente", "Listar Clientes"])
 
-# Opção 1: Incluir Cliente
-if opcao == "Incluir Cliente":
+# Guia 1: Incluir Cliente
+with tab1:
     st.header("Incluir Novo Cliente")
     st.session_state["cliente"] = None
 
@@ -164,8 +173,8 @@ if opcao == "Incluir Cliente":
     nascimento_dia = st.number_input("Dia de Nascimento:", min_value=1, max_value=31)
     nascimento_hora = st.number_input("Hora de Nascimento:", min_value=0, max_value=23)
     nascimento_minuto = st.number_input("Minuto de Nascimento:", min_value=0, max_value=59)
-    nascimento_latitude = st.number_input("Latitude de Nascimento:")
-    nascimento_longitude = st.number_input("Longitude de Nascimento:")
+    nascimento_latitude = st.number_input("Latitude de Nascimento:", value=0.0)
+    nascimento_longitude = st.number_input("Longitude de Nascimento:", value=0.0)
 
     # Botão para salvar
     if st.button("Salvar Cliente"):
@@ -194,16 +203,31 @@ if opcao == "Incluir Cliente":
         if salvar_cliente(None, dados):
             st.session_state["cliente"] = None  # Limpar o formulário após salvar
 
-# Opção 2: Alterar Cliente
-elif opcao == "Alterar Cliente":
+# Guia 2: Alterar Cliente
+with tab2:
     st.header("Alterar Cliente Existente")
-    codigo_cliente = st.number_input("Digite o código do cliente:", min_value=1, step=1)
+    nome_busca = st.text_input("Digite o nome ou parte do nome do cliente:")
     if st.button("Buscar Cliente"):
-        cliente = buscar_cliente_por_codigo(codigo_cliente)
+        clientes = buscar_clientes_por_nome(nome_busca)
+        if clientes:
+            st.session_state["clientes_encontrados"] = clientes
+        else:
+            st.error("Nenhum cliente encontrado.")
+
+    if "clientes_encontrados" in st.session_state and st.session_state["clientes_encontrados"]:
+        clientes = st.session_state["clientes_encontrados"]
+        cliente_selecionado = st.selectbox(
+            "Selecione o cliente para editar:",
+            options=[f"{cliente[1]} (Código: {cliente[0]})" for cliente in clientes]
+        )
+
+        # Extrair o código do cliente selecionado
+        codigo_cliente = int(cliente_selecionado.split("(Código: ")[1].replace(")", ""))
+
+        # Buscar os dados completos do cliente selecionado
+        cliente = next((c for c in clientes if c[0] == codigo_cliente), None)
         if cliente:
             st.session_state["cliente"] = cliente
-        else:
-            st.error("Cliente não encontrado.")
 
     if "cliente" in st.session_state and st.session_state["cliente"]:
         cliente = st.session_state["cliente"]
@@ -226,8 +250,14 @@ elif opcao == "Alterar Cliente":
         nascimento_dia = st.number_input("Dia de Nascimento:", value=cliente[15], min_value=1, max_value=31)
         nascimento_hora = st.number_input("Hora de Nascimento:", value=cliente[16], min_value=0, max_value=23)
         nascimento_minuto = st.number_input("Minuto de Nascimento:", value=cliente[17], min_value=0, max_value=59)
-        nascimento_latitude = st.number_input("Latitude de Nascimento:", value=float(cliente[18]))
-        nascimento_longitude = st.number_input("Longitude de Nascimento:", value=float(cliente[19]))
+        nascimento_latitude = st.number_input(
+            "Latitude de Nascimento:",
+            value=float(cliente[18]) if cliente[18] is not None else 0.0
+        )
+        nascimento_longitude = st.number_input(
+            "Longitude de Nascimento:",
+            value=float(cliente[19]) if cliente[19] is not None else 0.0
+        )
 
         # Botão para salvar
         if st.button("Salvar Alterações"):
@@ -256,11 +286,26 @@ elif opcao == "Alterar Cliente":
             if salvar_cliente(cliente[0], dados):
                 st.session_state["cliente"] = None  # Limpar o formulário após salvar
 
-# Opção 3: Listar Clientes
-elif opcao == "Listar Clientes":
+# Guia 3: Listar Clientes
+with tab3:
     st.header("Lista de Clientes")
     clientes = listar_clientes()
     if clientes:
-        st.table(clientes)
+        # Definir nomes das colunas corrigidos
+        colunas = [
+            "Código", "Nome", "Data Nascimento", "Ba Zhi", "Chamar", "Assinatura", 
+            "Relacionamento", "Profissão", "Orientação", "Início Assinatura", 
+            "Fim Assinatura", "Início Degustação", "Fim Degustação", "Ano Nascimento",
+            "Mês Nascimento", "Dia Nascimento", "Hora Nascimento", "Minuto Nascimento",
+            "Latitude Nascimento", "Longitude Nascimento"
+        ]
+
+        # Exibir tabela com formatação aprimorada
+        st.dataframe(
+            clientes,
+            column_config={i: col for i, col in enumerate(colunas)},
+            width=900,
+            height=600
+        )
     else:
         st.warning("Nenhum cliente encontrado.")

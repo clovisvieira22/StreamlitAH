@@ -5,15 +5,20 @@ from datetime import datetime
 # Título da aplicação
 st.title("Formulário de Cadastro de Prospects")
 
+DBName = st.secrets["credentials"]["db_name"]
+DBUser = st.secrets["credentials"]["db_user"]
+DBPassword = st.secrets["credentials"]["db_password"]
+DBHost = st.secrets["credentials"]["db_host"]
+DBPort = st.secrets["credentials"]["db_port"]
 # Função para conectar ao banco de dados PostgreSQL
 def conectar_banco():
     try:
         conn = psycopg2.connect(
-            dbname="nome_do_banco",  # Substitua pelo nome do seu banco de dados
-            user="usuario",          # Substitua pelo seu usuário do PostgreSQL
-            password="senha",        # Substitua pela sua senha do PostgreSQL
-            host="localhost",        # Substitua pelo host do seu banco de dados
-            port="5432"             # Substitua pela porta do seu banco de dados
+            dbname=DBName,
+            user=DBUser,
+            password=DBPassword,
+            host=DBHost,
+            port=DBPort
         )
         return conn
     except Exception as e:
